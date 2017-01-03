@@ -62,11 +62,11 @@ extension UIScrollView {
     
     // Manually start pull to refresh
     public func startPullToRefresh() {
-        pullToRefreshView?.loading = true
+        pullToRefreshView?.startLoading()
     }
     
     // Manually stop pull to refresh
     public func stopPullToRefresh() {
-        pullToRefreshView?.loading = false
+        pullToRefreshView?.stopLoading()
     }
 }

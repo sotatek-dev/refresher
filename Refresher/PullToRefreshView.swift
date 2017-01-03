@@ -52,17 +52,20 @@ open class PullToRefreshView: UIView {
 
     private var previousOffset: CGFloat = 0
 
-    internal var loading: Bool = false {
-        
-        didSet {
-            if loading != oldValue {
-                if loading {
-                    startAnimating()
-                } else {
-                    stopAnimating()
-                }
-            }
+    internal var loading: Bool = false
+
+    public func startLoading() {
+        if !loading {
+            startAnimating(false)
         }
+        loading = true
+    }
+
+    private var stopping = false
+    public func stopLoading() {
+        if stopping { return }
+        stopping = true
+        stopAnimating()
     }
     
     
@@ -128,7 +131,10 @@ open class PullToRefreshView: UIView {
                     let offsetWithoutInsets = previousOffset + scrollViewInsetsDefaultValue.top
                     if (offsetWithoutInsets < -self.frame.size.height) {
                         if (scrollView.isDragging == false && loading == false) {
-                            loading = true
+                            if !loading {
+                                loading = true
+                                startAnimating(true)
+                            }
                         } else if (loading) {
                             self.animator.pullToRefresh(self, stateDidChange: .loading)
                         } else {
@@ -152,7 +158,7 @@ open class PullToRefreshView: UIView {
     
     //MARK: PullToRefreshView methods
 
-    private func startAnimating() {
+    private func startAnimating(_ doAction: Bool = true) {
         let scrollView = superview as! UIScrollView
         var insets = scrollView.contentInset
         insets.top += self.frame.size.height
@@ -165,7 +171,9 @@ open class PullToRefreshView: UIView {
             scrollView.contentOffset = CGPoint(x: scrollView.contentOffset.x, y: -insets.top)
         }, completion: {finished in
             self.animator.pullToRefreshAnimationDidStart(self)
-            self.action()
+            if doAction {
+                self.action()
+            }
         })
     }
     
@@ -177,6 +185,8 @@ open class PullToRefreshView: UIView {
             scrollView.contentInset = self.scrollViewInsetsDefaultValue
         }, completion: { finished in
             self.animator.pullToRefresh(self, progressDidChange: 0)
+            self.stopping = false
+            self.loading = false
         }) 
     }
 }

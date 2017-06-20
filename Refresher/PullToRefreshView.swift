@@ -34,7 +34,7 @@ public enum PullToRefreshViewState {
     case releaseToRefresh
 }
 
-public protocol PullToRefreshViewDelegate {
+public protocol PullToRefreshViewDelegate: class {
     
     func pullToRefreshAnimationDidStart(_ view: PullToRefreshView)
     func pullToRefreshAnimationDidEnd(_ view: PullToRefreshView)
@@ -47,7 +47,7 @@ open class PullToRefreshView: UIView {
     private var scrollViewBouncesDefaultValue: Bool = false
     private var scrollViewInsetsDefaultValue: UIEdgeInsets = UIEdgeInsets.zero
 
-    private var animator: PullToRefreshViewDelegate
+    private weak var animator: PullToRefreshViewDelegate!
     private var action: (() -> ()) = {}
 
     private var previousOffset: CGFloat = 0
